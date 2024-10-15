@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Country extends Model
 {
-    protected $table = 'countries'; // Nombre de la tabla en la base de datos
+    protected $table = 'system_countries'; // Nombre de la tabla en la base de datos
 
     protected $primaryKey = 'id';
     public $incrementing = true;

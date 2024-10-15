@@ -23,7 +23,9 @@ class SupplierResource extends Resource
 {
     protected static ?string $model = Supplier::class;
 
-    public static ?string $label = 'Proveedores';
+    public static ?string $label = 'Proveedor';
+
+    public static ?string $pluralLabel = 'Proveedores';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -47,7 +49,7 @@ class SupplierResource extends Resource
                     ->live()
                     ->required(),
                 Forms\Components\Select::make('state_id')
-                    ->label(__('Estado'))
+                    ->label(__('Departamento'))
                     ->relationship('state', 'name')
                     ->preload()
                     ->searchable()

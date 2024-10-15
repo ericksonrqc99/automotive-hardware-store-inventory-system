@@ -20,27 +20,29 @@ class ModelCarResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $label = 'Modelos de Carros';
+    protected static ?string $label = 'Modelo de Automovil';
+
+    protected static ?string $pluralLabel = 'Modelos de Automoviles';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label(__('Nombre'))
+                    ->label(__('Modelo'))
                     ->required()
                     ->maxLength(100),
-                Forms\Components\DatePicker::make('year')
+                Forms\Components\TextInput::make('year')
                     ->label(__('Año'))
-                    ->format('y')   
                     ->required(),
                 Forms\Components\Select::make('brand_id')
                     ->label(__('Marca'))
                     ->relationship('brand', 'name')
                     ->required()
-                    ->searchable()->options(Brand::all()->pluck('name', 'id')),
-
+                    ->searchable()
+                    ->options(Brand::all()->pluck('name', 'id')),
                 Forms\Components\Select::make('status_id')
+                    ->default(1)
                     ->relationship('status', 'name')
                     ->required(),
             ]);
@@ -51,19 +53,36 @@ class ModelCarResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('Modelo'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('year'),
-                Tables\Columns\TextColumn::make('brand.name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('year')
+                    ->label(__('Año'))
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status.name')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('brand.name')
+                    ->label(__('Marca'))
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('status.name')
+                    ->label(__('Estatus'))
+                    ->color(fn(string $state): string => match ($state) {
+                        'activo' => 'success',
+                        'inactivo' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn(string $state): string => match ($state) {
+                        'activo' => 'heroicon-o-check-circle',
+                        'inactivo' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('Creado'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('Actualizado'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

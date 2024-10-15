@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'sku', 'description', 'price', 'cost', 'minimum_stock', 'stock', 'alert_stock_id', 'generic_use', 'brand_id', 'supplier_id', 'measurement_unit_id', 'status_id'];
+    protected $fillable = ['name', 'sku', 'code', 'description', 'price', 'cost', 'minimum_stock', 'stock', 'alert_stock_id', 'generic_use', 'brand_id', 'supplier_id', 'measurement_unit_id', 'status_id'];
 
     public function brand()
     {
@@ -41,9 +41,14 @@ class Product extends Model
     {
         return $this->belongsToMany(ModelCar::class, 'products_has_model_cars', 'product_id', 'model_car_id');
     }
-    
+
     public function status()
     {
         return $this->belongsTo(StatusType::class, 'status_id');
+    }
+    
+    public function alertStock()
+    {
+        return $this->belongsTo(StatusType::class, 'alert_stock_id');
     }
 }

@@ -19,16 +19,20 @@ class MeasurementUnitResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $label = 'Unidades de Medida'; 
+    protected static ?string $label = 'Unidad de Medida';
+
+    protected static ?string $pluralLabel = 'Unidades de Medida';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label(__('Nombre'))
                     ->required()
                     ->maxLength(45),
                 Forms\Components\TextInput::make('abbreviation')
+                    ->label(__('Abreviatura'))
                     ->required()
                     ->maxLength(10),
             ]);
@@ -39,14 +43,18 @@ class MeasurementUnitResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label(__('Nombre'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('abbreviation')
+                    ->label(__('Abreviatura'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label(__('Creado'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label(__('Actualizado'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

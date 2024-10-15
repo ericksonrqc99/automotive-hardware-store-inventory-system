@@ -25,6 +25,7 @@ class DashboardPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->profile($isSimple = false)
             ->id('dashboard')
             ->path('dashboard')
             ->login()

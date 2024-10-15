@@ -19,6 +19,10 @@ class BrandResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $label = 'Marca';
+
+    protected static ?string $pluralLabel = 'Marcas';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -26,7 +30,7 @@ class BrandResource extends Resource
                 Forms\Components\TextInput::make('name')->label(__('Nombre'))
                     ->required()
                     ->maxLength(100),
-                Forms\Components\Select::make('status_id')->label(__('Estado'))
+                Forms\Components\Select::make('status_id')->label(__('Departamento'))
                     ->relationship('status', 'name')
                     ->default(1)
                     ->required(),
@@ -41,7 +45,7 @@ class BrandResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(__('Nombre'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status.name')->label(__('Estado'))
+                Tables\Columns\TextColumn::make('status.name')->label(__('Departamento'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('description')->label(__('Descripción'))

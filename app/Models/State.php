@@ -10,7 +10,7 @@ class State extends Model
     use HasFactory;
 
     // Nombre de la tabla en la base de datos
-    protected $table = 'states';
+    protected $table = 'system_states';
 
     // Clave primaria
     protected $primaryKey = 'id';

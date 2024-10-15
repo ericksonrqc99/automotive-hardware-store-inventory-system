@@ -10,7 +10,7 @@ class City extends Model
     use HasFactory;
 
     // Nombre de la tabla en la base de datos
-    protected $table = 'cities';
+    protected $table = 'system_cities';
 
     // Clave primaria
     protected $primaryKey = 'id';
