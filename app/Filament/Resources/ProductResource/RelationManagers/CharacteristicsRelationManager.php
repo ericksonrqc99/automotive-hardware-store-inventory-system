@@ -12,7 +12,10 @@ use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Actions\DetachAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+
 
 class CharacteristicsRelationManager extends RelationManager
 {
@@ -22,6 +25,8 @@ class CharacteristicsRelationManager extends RelationManager
 
     protected static ?string $plurasLabel = 'Características';
 
+
+    protected static ?string $title = 'Características';
 
     public function form(Form $form): Form
     {
@@ -33,6 +38,9 @@ class CharacteristicsRelationManager extends RelationManager
                     ->maxLength(100),
             ]);
     }
+
+
+
 
     public function table(Table $table): Table
     {
@@ -50,14 +58,13 @@ class CharacteristicsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\AttachAction::make()->form(fn(AttachAction $action): array => [
+                Tables\Actions\AttachAction::make()->label(__('Agregar'))->form(fn(AttachAction $action): array => [
                     $action->getRecordSelect()->options(\App\Models\Characteristic::all()->pluck('name', 'id')),
                     Forms\Components\TextInput::make('value')->label(__('Valor'))->required(),
                 ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                DetachAction::make()
+                DetachAction::make()->label('Eliminar'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
