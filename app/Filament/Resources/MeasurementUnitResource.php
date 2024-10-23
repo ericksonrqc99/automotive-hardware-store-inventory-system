@@ -10,8 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class MeasurementUnitResource extends Resource
 {
@@ -19,10 +18,18 @@ class MeasurementUnitResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $label = 'Unidad de Medida';
+    protected static ?string $navigationGroup = 'Manejo de productos';
 
-    protected static ?string $pluralLabel = 'Unidades de Medida';
 
+    public static function getPluralLabel(): ?string
+    {
+        return __('Unidades de medida');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Unidad de medida');
+    }
     public static function form(Form $form): Form
     {
         return $form

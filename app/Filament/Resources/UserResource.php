@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ConceptResource\Pages;
-use App\Filament\Resources\ConceptResource\RelationManagers;
-use App\Models\Concept;
+use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,23 +13,47 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ConceptResource extends Resource
+class UserResource extends Resource
 {
-    protected static ?string $model = Concept::class;
+    protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $label = 'Conceptos';
+    protected static ?string $navigationGroup = 'Manejo de usuarios';
+
+
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('Usuarios');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Usuario');
+    }
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('status_id')
+                    ->relationship('status', 'name')
+                    ->default(1),
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(45),
-                Forms\Components\TextInput::make('description')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('email')
+                    ->email()
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\DateTimePicker::make('email_verified_at'),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('ndocument')
+                    ->numeric(),
             ]);
     }
 
@@ -38,8 +62,9 @@ class ConceptResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
+                Tables\Columns\TextColumn::make('email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -49,6 +74,9 @@ class ConceptResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('ndocument')
+                    ->label('Número de documento')
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -73,9 +101,9 @@ class ConceptResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListConcepts::route('/'),
-            'create' => Pages\CreateConcept::route('/create'),
-            'edit' => Pages\EditConcept::route('/{record}/edit'),
+            'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }

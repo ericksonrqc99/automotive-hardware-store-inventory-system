@@ -3,6 +3,12 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\SupplierResource;
+use App\Filament\Resources\UserResource;
+use App\Filament\Resources\CategoryResource;
+use App\Filament\Resources\BrandResource;
+use App\Filament\Resources\ProductResource;
+use App\Filament\Resources\SaleResource;
+use App\Filament\Resources\UserResource\Widgets\UsersSalesChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +24,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -36,11 +43,16 @@ class DashboardPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                SupplierResource\Widgets\SupplierOverview::class
+                SupplierResource\Widgets\SupplierOverview::class,
+                SaleResource\Widgets\SaleTimesOverview::class,
+                UserResource\Widgets\UsersSalesChart::class,
+                CategoryResource\Widgets\CategorySalesOverview::class,
+                BrandResource\Widgets\BrandSalesOverview::class,
+                ProductResource\Widgets\ProductsStockOverview::class,
             ])->profile()
             ->middleware([
                 EncryptCookies::class,
@@ -55,6 +67,7 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])->brandName('RyM')
+        ;
     }
 }

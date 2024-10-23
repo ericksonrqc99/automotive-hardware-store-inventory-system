@@ -21,4 +21,10 @@ class Sale extends Model
     {
         return $this->belongsTo(User::class, 'customer_id', 'id');
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'sales_details')
+            ->withPivot(['quantity']);
+    }
 }

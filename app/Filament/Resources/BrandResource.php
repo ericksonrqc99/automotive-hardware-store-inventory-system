@@ -17,11 +17,22 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $label = 'Marca';
+    protected static ?string $navigationGroup = 'Manejo de productos';
 
-    protected static ?string $pluralLabel = 'Marcas';
+
+
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('Marcas');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Marca');
+    }
 
     public static function form(Form $form): Form
     {

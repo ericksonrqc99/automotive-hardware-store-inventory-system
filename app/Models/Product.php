@@ -46,9 +46,15 @@ class Product extends Model
     {
         return $this->belongsTo(StatusType::class, 'status_id');
     }
-    
+
     public function alertStock()
     {
         return $this->belongsTo(StatusType::class, 'alert_stock_id');
+    }
+
+    public function sales()
+    {
+        return $this->belongsToMany(Sale::class, 'sales_details')
+            ->withPivot(['quantity']);
     }
 }

@@ -17,12 +17,20 @@ class CharacteristicResource extends Resource
 {
     protected static ?string $model = Characteristic::class;
 
-    protected static ?string $label = 'Caráctiristica';
+    protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
 
-    protected static ?string $pluralLabel = 'Carácteristicas';
+    protected static ?string $navigationGroup = 'Manejo de productos';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getPluralLabel(): ?string
+    {
+        return __('Características');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Característica');
+    }
     public static function form(Form $form): Form
     {
         return $form

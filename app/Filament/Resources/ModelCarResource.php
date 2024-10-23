@@ -11,19 +11,25 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ModelCarResource extends Resource
 {
     protected static ?string $model = ModelCar::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $label = 'Modelo de Automovil';
+    protected static ?string $navigationGroup = 'Manejo de productos';
 
-    protected static ?string $pluralLabel = 'Modelos de Automoviles';
 
+    public static function getPluralLabel(): ?string
+    {
+        return __('Modelos de vehículos');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Modelo de vehículo');
+    }
     public static function form(Form $form): Form
     {
         return $form

@@ -12,22 +12,28 @@ use Faker\Core\Color;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SupplierResource extends Resource
 {
     protected static ?string $model = Supplier::class;
 
-    public static ?string $label = 'Proveedor';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    public static ?string $pluralLabel = 'Proveedores';
+    protected static ?string $navigationGroup = 'Manejo de proveedores';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    public static function getPluralLabel(): ?string
+    {
+        return __('Proveedores');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Proveedor');
+    }
 
     public static function form(Form $form): Form
     {
@@ -44,24 +50,29 @@ class SupplierResource extends Resource
                 Forms\Components\Select::make('country_id')
                     ->label(__('País'))
                     ->relationship('country', 'name')
+                    ->afterStateUpdated(function (Set $set) {
+                        $set('state_id', null);
+                        $set('city_id', null);
+                    })
                     ->searchable()
                     ->preload()
                     ->live()
                     ->required(),
                 Forms\Components\Select::make('state_id')
                     ->label(__('Departamento'))
-                    ->relationship('state', 'name')
                     ->preload()
                     ->searchable()
+                    ->live()
                     ->options(fn(Get $get) => State::query()->where('country_id', $get('country_id'))->pluck('name', 'id'))
+                    ->afterStateUpdated(function (Set $set) {
+                        $set('city_id', null);
+                    })
                     ->required(),
                 Forms\Components\Select::make('city_id')
                     ->label(__('Ciudad'))
-                    ->relationship('city', 'name')
                     ->preload()
                     ->searchable()
                     ->options(fn(Get $get) => City::query()->where('state_id', $get('state_id'))->pluck('name', 'id'))
-
                     ->required(),
                 Forms\Components\Select::make('status_id')
                     ->label(__('Estatus'))

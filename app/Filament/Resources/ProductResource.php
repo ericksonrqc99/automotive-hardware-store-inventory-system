@@ -26,11 +26,21 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $label = 'Producto';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
-    protected static ?string $pluralLabel = 'Productos';
+    protected static ?string $navigationGroup = 'Manejo de productos';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+
+    public static function getPluralLabel(): ?string
+    {
+        return __('Productos');
+    }
+
+    public static function getLabel(): ?string
+    {
+        return __('Producto');
+    }
 
     public static function form(Form $form): Form
     {
@@ -73,10 +83,12 @@ class ProductResource extends Resource
                     ->default(0),
                 Forms\Components\Select::make('alert_stock_id')
                     ->label(__('Alerta de stock'))
+                    ->default(1)
                     ->relationship('alertStock', 'name')
                     ->required(),
                 Forms\Components\Select::make('status_id')
                     ->label('Estatus')
+                    ->default(1)
                     ->relationship('status', 'name')
                     ->required(),
                 Forms\Components\Select::make('brand_id')
@@ -159,7 +171,6 @@ class ProductResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('alertStock.name')
                     ->label('Alerta de stock')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status.name')
                     ->label('Estatus')
