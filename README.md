@@ -38,3 +38,4 @@ To start the development server, run:
 ```sh
 php artisan serve
 ```
+made with ❤️ for Erickson
