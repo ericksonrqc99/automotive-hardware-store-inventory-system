@@ -3,12 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
 use App\Filament\Resources\ProductResource\RelationManagers\CharacteristicsRelationManager;
 use App\Models\Brand;
 use App\Models\Category;
-use App\Models\Characteristic;
 use App\Models\MeasurementUnit;
+use App\Models\MethodPayment;
 use App\Models\ModelCar;
 use App\Models\Product;
 use App\Models\Supplier;
@@ -16,11 +15,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\AttachAction;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Mail\Mailables\Attachment;
 
 class ProductResource extends Resource
 {
@@ -31,6 +26,10 @@ class ProductResource extends Resource
     protected static ?string $navigationGroup = 'Manejo de productos';
 
 
+    public static function getNavigationSort(): ?int
+    {
+        return 1;
+    }
 
     public static function getPluralLabel(): ?string
     {
@@ -131,6 +130,8 @@ class ProductResource extends Resource
                     ->multiple()
                     ->searchable()
                     ->required(),
+                Forms\Components\FileUpload::make('image_url')
+                    ->image()->imageEditor()->imageEditorMode(2),
             ]);
     }
 
@@ -160,6 +161,7 @@ class ProductResource extends Resource
                     ->label('Costo de compra')
                     ->money($curency = 'S/.')
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('image_url')->label('Imagen'),
                 Tables\Columns\TextColumn::make('minimum_stock')
                     ->label('Stock mínimo')
                     ->numeric()
@@ -206,6 +208,8 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -227,6 +231,7 @@ class ProductResource extends Resource
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'view' => Pages\ViewProduct::route('/{record}'),
         ];
     }
 }

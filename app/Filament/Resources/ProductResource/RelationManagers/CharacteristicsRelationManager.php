@@ -39,9 +39,6 @@ class CharacteristicsRelationManager extends RelationManager
             ]);
     }
 
-
-
-
     public function table(Table $table): Table
     {
         return $table

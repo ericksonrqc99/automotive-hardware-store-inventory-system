@@ -1,5 +1,6 @@
 <?php
 
+
 return [
     'shield_resource' => [
         'should_register_navigation' => true,
@@ -64,13 +65,11 @@ return [
 
     'exclude' => [
         'enabled' => true,
-
-        'pages' => [
-            'Dashboard',
-        ],
+        'pages' => ['dashboard'],
 
         'widgets' => [
-            'AccountWidget', 'FilamentInfoWidget',
+            'AccountWidget',
+            'FilamentInfoWidget',
         ],
 
         'resources' => [],

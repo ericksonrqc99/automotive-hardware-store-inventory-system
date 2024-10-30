@@ -9,7 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'sku', 'code', 'description', 'price', 'cost', 'minimum_stock', 'stock', 'alert_stock_id', 'generic_use', 'brand_id', 'supplier_id', 'measurement_unit_id', 'status_id'];
+    protected $fillable = ['name', 'sku', 'code', 'description', 'price', 'cost', 'minimum_stock', 'stock', 'alert_stock_id', 'generic_use', 'brand_id', 'supplier_id', 'measurement_unit_id', 'status_id', 'image_url'];
 
     public function brand()
     {
@@ -40,6 +40,11 @@ class Product extends Model
     public function modelCars()
     {
         return $this->belongsToMany(ModelCar::class, 'products_has_model_cars', 'product_id', 'model_car_id');
+    }
+
+    public function methodPayment()
+    {
+        return $this->belongsTo(MethodPayment::class, 'method_payment_id');
     }
 
     public function status()

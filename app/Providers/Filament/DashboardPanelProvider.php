@@ -8,7 +8,6 @@ use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\BrandResource;
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\SaleResource;
-use App\Filament\Resources\UserResource\Widgets\UsersSalesChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -16,7 +15,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,26 +22,32 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
+use SolutionForest\FilamentSimpleLightBox\SimpleLightBoxPlugin;
 
 class DashboardPanelProvider extends PanelProvider
 {
+
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->default()
-            ->profile($isSimple = false)
+            ->profile()
             ->id('dashboard')
             ->path('dashboard')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
+            ])->navigationGroups([
+                'Manejo de productos',
+                'Manejo de proveedores',
+                'Manejo de usuarios',
+                'Roles y Permisos',
+                'Configuraciones',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -64,18 +68,11 @@ class DashboardPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
+            ])->sidebarCollapsibleOnDesktop()
             ->authMiddleware([
                 Authenticate::class,
-            ])->brandName('RyM')->plugin(
-                FilamentFullCalendarPlugin::make()
-                    ->schedulerLicenseKey('')
-                    ->selectable()
-                    ->editable()
-                    ->timezone('America/Lima')
-                    // ->locale()
-                    // ->plugins()
-                    // ->config()
-            );;
+            ])->brandName('RyM')->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
+            ])->plugin(SimpleLightBoxPlugin::make());
     }
 }

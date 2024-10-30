@@ -5,9 +5,11 @@ namespace App\Filament\Resources\SaleResource\Widgets;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class SaleTimesOverview extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?string $heading = 'Ventas a lo Largo del Tiempo';
 
     public ?string $filter = 'monthly'; // Valor por defecto

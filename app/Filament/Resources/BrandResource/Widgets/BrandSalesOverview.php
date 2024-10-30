@@ -4,9 +4,13 @@ namespace App\Filament\Resources\BrandResource\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class BrandSalesOverview extends ChartWidget
 {
+
+    use HasWidgetShield;
+
     protected static ?string $heading = 'Top 5 Marcas con más ventas';
 
     protected function getData(): array

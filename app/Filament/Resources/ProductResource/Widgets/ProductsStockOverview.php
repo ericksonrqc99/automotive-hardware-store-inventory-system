@@ -4,9 +4,12 @@ namespace App\Filament\Resources\ProductResource\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class ProductsStockOverview extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected static ?string $heading = 'Inventario por Nivel de Stock';
 
     protected function getData(): array

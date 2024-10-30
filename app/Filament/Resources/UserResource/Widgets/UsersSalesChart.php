@@ -4,9 +4,12 @@ namespace App\Filament\Resources\UserResource\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class UsersSalesChart extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected static ?string $heading = 'Top 5 mejores clientes';
 
     protected function getData(): array
@@ -26,8 +29,8 @@ class UsersSalesChart extends ChartWidget
         $quantities = $topCustomers->pluck('total_purchases')->toArray();
 
 
-         // Definir colores personalizados para cada barra
-         $colors = [
+        // Definir colores personalizados para cada barra
+        $colors = [
             'rgba(255, 99, 132, 0.2)', // Rojo
             'rgba(54, 162, 235, 0.2)', // Azul
             'rgba(255, 206, 86, 0.2)', // Amarillo
@@ -37,11 +40,11 @@ class UsersSalesChart extends ChartWidget
 
         // Bordes para cada barra (opcional)
         $borderColors = [
-            'rgba(255, 99, 132, 1)', 
-            'rgba(54, 162, 235, 1)', 
-            'rgba(255, 206, 86, 1)', 
-            'rgba(75, 192, 192, 1)', 
-            'rgba(153, 102, 255, 1)', 
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
         ];
 
         // Retornar los datos en formato de gráfico de barras

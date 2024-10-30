@@ -12,8 +12,12 @@ class ShoppingCart extends Model
         'id',
         'name',
         'price',
-        'quantity',
         'measurement_unit_id',
+        'sku',
+        'code',
+        'description',
+        'brand_id',
+        'quantity',
         'total_price',
     ];
 
@@ -23,9 +27,13 @@ class ShoppingCart extends Model
         'id' => 'integer',
         'name' => 'string',
         'price' => 'integer',
-        'quantity' => 'integer',
         'measurement_unit_id' => 'integer',
+        'sku' => 'string',
+        'brand_id' => 'integer',
+        'quantity' => 'integer',
         'total_price' => 'integer',
+        'code' => 'string',
+        'description' => 'string'
     ];
 
 

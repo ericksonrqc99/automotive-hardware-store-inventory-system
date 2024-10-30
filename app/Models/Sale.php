@@ -9,7 +9,7 @@ class Sale extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'customer_id', 'quantity', 'sub_total_price', 'discount', 'tax_amount', 'total_price'];
+    protected $fillable = ['id', 'user_id', 'customer_id', 'quantity', 'sub_total_price', 'discount', 'tax_amount', 'total_price', 'method_payment_id', 'voucher_type_id'];
 
 
     public function user()
@@ -26,5 +26,10 @@ class Sale extends Model
     {
         return $this->belongsToMany(Product::class, 'sales_details')
             ->withPivot(['quantity']);
+    }
+
+    public function methodPayment()
+    {
+        return $this->belongsTo(MethodPayment::class, 'method_payment_id');
     }
 }

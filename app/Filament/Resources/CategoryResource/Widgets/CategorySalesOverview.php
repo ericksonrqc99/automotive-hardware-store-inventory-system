@@ -4,9 +4,12 @@ namespace App\Filament\Resources\CategoryResource\Widgets;
 
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class CategorySalesOverview extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected static ?string $heading = 'Top 5 Categorías Más Vendidas';
 
 

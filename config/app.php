@@ -12,7 +12,6 @@ return [
     | other UI elements where an application name needs to be displayed.
     |
     */
-
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
@@ -122,5 +121,8 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+
+    'company_name' => env('COMPANY_NAME', '[COMPANY]'),
 
 ];

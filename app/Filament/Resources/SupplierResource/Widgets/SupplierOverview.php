@@ -5,9 +5,12 @@ namespace App\Filament\Resources\SupplierResource\Widgets;
 use Filament\Actions\Action;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class SupplierOverview extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected static ?string $heading = 'Top 5 Productos Más Vendidos';
 
 

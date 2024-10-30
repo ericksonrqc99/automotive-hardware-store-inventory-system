@@ -11,13 +11,21 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class SaleResource extends Resource
 {
     protected static ?string $model = Sale::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
+
+    public static function getNavigationSort(): ?int
+    {
+        return 1;
+    }
 
     public static function getPluralLabel(): ?string
     {
@@ -42,24 +50,24 @@ class SaleResource extends Resource
                     ->getOptionLabelFromRecordUsing(fn(User $record) => "{$record->name}")
                     ->searchable(['name', 'ndocument'])
                     ->required()->disabled(),
-                // Forms\Components\TextInput::make('quantity')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('sub_total_price')
-                //     ->required()
-                //     ->numeric(),
-                // Forms\Components\TextInput::make('discount')
-                //     ->required()
-                //     ->numeric()
-                //     ->default(0.00),
-                // Forms\Components\TextInput::make('tax_amount')
-                //     ->required()
-                //     ->numeric()
-                //     ->default(0.00),
-                // Forms\Components\TextInput::make('total_price')
-                //     ->required()
-                //     ->numeric()
-                //     ->default(0.00),
+                Forms\Components\TextInput::make('quantity')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('sub_total_price')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('discount')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('tax_amount')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('total_price')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
             ]);
     }
 
@@ -70,34 +78,36 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label(__('Usuario'))
                     ->numeric()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label(__('Cliente'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label(__('Cantidad'))
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('sub_total_price')
                     ->label(__('Subtotal'))
-                    ->numeric()
+                    ->money($currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('discount')
                     ->label(__('Descuento'))
-                    ->numeric()
+                    ->money($currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tax_amount')
                     ->label(__('Impuesto'))
-                    ->numeric()
+                    ->money($currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('total_price')
                     ->label(__('Total'))
-                    ->numeric()
+                    ->money($currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('Creación'))
-                    ->dateTime()
+                    ->since()
+                    ->dateTimeTooltip($format = 'd-m-Y H:i:s', $timezone = 'America/Lima')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
@@ -111,6 +121,21 @@ class SaleResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+                Action::make('add-product-to-cart')
+                    ->icon('heroicon-s-document')
+                    ->label('PDF')
+                    ->color('danger')
+                    ->modalContent(function (Sale $record) {
+                        $filename = 'ticket-sale-' . $record->id . '.pdf';
+                        $path = 'pdfs/tickets/' . $filename;
+                        if (Storage::exists($path)) {
+                            $base64 = base64_encode(Storage::get($path));
+                            return view('filament.components.pdf-viewer', [
+                                'pdfData' => $base64
+                            ]);
+                        }
+                    })->modalSubmitAction(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -118,6 +143,7 @@ class SaleResource extends Resource
                 ]),
             ]);
     }
+
 
     public static function getRelations(): array
     {
@@ -131,8 +157,9 @@ class SaleResource extends Resource
         return [
 
             'index' => Pages\ListSales::route('/'),
-            // 'create' => Pages\CreateSale::route('/create'),
+            'create' => Pages\CreateSale::route('/create'),
             'edit' => Pages\EditSale::route('/{record}/edit'),
+            'view' => Pages\ViewSale::route('/{record}'),
         ];
     }
 }
