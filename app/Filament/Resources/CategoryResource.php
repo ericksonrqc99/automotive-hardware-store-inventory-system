@@ -60,9 +60,16 @@ class CategoryResource extends Resource
                     ->label(__('Nombre'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status.name')
-                    ->label(__('Estado'))
-                    ->numeric()
-                    ->sortable(),
+                    ->color(fn(string $state): string => match ($state) {
+                        'activo' => 'success',
+                        'inactivo' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn(string $state): string => match ($state) {
+                        'activo' => 'heroicon-o-check-circle',
+                        'inactivo' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    }),
                 Tables\Columns\TextColumn::make('description')
                     ->label(__('Descripción'))
                     ->searchable(),

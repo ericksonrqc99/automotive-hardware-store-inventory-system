@@ -172,16 +172,32 @@ class ProductResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('alertStock.name')
-                    ->label('Alerta de stock')
-                    ->sortable(),
+                    ->color(fn(string $state): string => match ($state) {
+                        'activo' => 'success',
+                        'inactivo' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn(string $state): string => match ($state) {
+                        'activo' => 'heroicon-o-check-circle',
+                        'inactivo' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    }),
                 Tables\Columns\TextColumn::make('status.name')
-                    ->label('Estatus')
-                    ->numeric()
-                    ->sortable(),
+                    ->color(fn(string $state): string => match ($state) {
+                        'activo' => 'success',
+                        'inactivo' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn(string $state): string => match ($state) {
+                        'activo' => 'heroicon-o-check-circle',
+                        'inactivo' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    }),
                 Tables\Columns\TextColumn::make('brand.name')
                     ->label('Marca')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('supplier.name')
                     ->label('Proveedor')
                     ->numeric()

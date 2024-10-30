@@ -191,6 +191,8 @@ class ManageSale extends Component implements HasForms, HasActions
             $sale->products()->sync($productsToSync);
             $this->dispatch('refresh-table-list-products-pos');
 
+            $this->notifyAlertStock($sale);
+
             // successSale true for show ticket button
             $this->successSale = true;
         } catch (\Throwable $th) {
@@ -200,6 +202,42 @@ class ManageSale extends Component implements HasForms, HasActions
             return null;
         }
     }
+
+
+    public function notifyAlertStock(Sale $sale)
+    {
+        try {
+            $products = $sale->products()->with('alertStock')->get();
+
+            $products->each(function (Product $product) {
+                // Obtén el modelo relacionado
+                $alertStock = $product->alertStock;
+
+                // Verifica si el modelo relacionado existe y tiene la propiedad `name`
+                if (!empty($alertStock->name)) {
+                    if ($alertStock->name === 'inactivo' || $alertStock->name === 'inactive') {
+
+                        return;
+                    }
+                    if ($product->stock < $product->minimum_stock) {
+                        // get all super_admin_users
+                        $superAdminUsers = User::whereHas('roles', function ($query) {
+                            $query->where('name', 'super_admin');
+                        })->get();
+
+                        $usersToNotify = collect([Auth::user()])->merge($superAdminUsers);
+
+                        Notification::make()
+                            ->title(__('El producto: ' . $product->name . ' está por debajo del stock mínimo'))
+                            ->sendToDatabase($usersToNotify);
+                    }
+                }
+            });
+        } catch (\Throwable $th) {
+            dd($th);
+        }
+    }
+
 
     #[On('pos-reset_sale')]
     public function resetSale()

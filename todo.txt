@@ -1,1 +1,2 @@
 TODO: add seeder for table status_types
+TODO: automatic generate voucher after sale without clicking in the show voucher 

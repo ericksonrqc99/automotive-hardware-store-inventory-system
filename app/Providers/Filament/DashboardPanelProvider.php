@@ -71,7 +71,9 @@ class DashboardPanelProvider extends PanelProvider
             ])->sidebarCollapsibleOnDesktop()
             ->authMiddleware([
                 Authenticate::class,
-            ])->brandName('RyM')->plugins([
+            ])->brandName('RyM')
+            ->databaseNotifications()
+            ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ])->plugin(SimpleLightBoxPlugin::make());
     }

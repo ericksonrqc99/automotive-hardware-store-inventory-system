@@ -69,7 +69,7 @@ class ModelCarResource extends Resource
                     ->label(__('Marca'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('status.name')
+                Tables\Columns\TextColumn::make('status.name')
                     ->label(__('Estatus'))
                     ->color(fn(string $state): string => match ($state) {
                         'activo' => 'success',

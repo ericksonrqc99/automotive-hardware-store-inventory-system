@@ -54,9 +54,17 @@ class BrandResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label(__('Nombre'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status.name')->label(__('Departamento'))
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('status.name')->label(__('Estado'))
+                    ->color(fn(string $state): string => match ($state) {
+                        'activo' => 'success',
+                        'inactivo' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn(string $state): string => match ($state) {
+                        'activo' => 'heroicon-o-check-circle',
+                        'inactivo' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
+                    }),
                 Tables\Columns\TextColumn::make('description')->label(__('Descripción'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')->label(__('Creado'))
