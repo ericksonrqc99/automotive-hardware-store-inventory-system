@@ -56,23 +56,23 @@
             <tr>
                 <td>{{ $item->product->name }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ $item->price }}</td>
-                <td>{{ $item->subtotal }}</td>
+                <td>{{ Number::currency($item->price,'S/.')}}</td>
+                <td>{{ Number::currency($item->subtotal,'S/.') }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>SubTotal:</strong></td>
-                <td>{{ $sale->subtotal }}</td>
+                <td>{{ Number::currency($sale->subtotal,'S/.') }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>IGV:</strong></td>
-                <td>{{ $sale->tax }}</td>
+                <td>{{ Number::currency($sale->tax,'S/.') }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>Total:</strong></td>
-                <td>{{ $sale->total }}</td>
+                <td>{{ Number::currency($sale->total,'S/.') }}</td>
             </tr>
         </tfoot>
     </table>

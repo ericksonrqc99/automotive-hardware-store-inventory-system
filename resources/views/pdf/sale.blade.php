@@ -57,15 +57,15 @@
             <tr>
                 <td>{{ $item->product->name }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ $item->price }}</td>
-                <td>{{ $item->subtotal }}</td>
+                <td>{{ @money($item->price) }}</td>
+                <td>{{ @money($item->subtotal) }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>Total:</strong></td>
-                <td>{{ $sale->total }}</td>
+                <td>{{ @money($sale->total) }}</td>
             </tr>
         </tfoot>
     </table>

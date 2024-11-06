@@ -2,10 +2,15 @@
 
 namespace App\Livewire\Sales;
 
+use App\Models\Concept;
+use App\Models\InventoryLog;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\ShoppingCart;
 use App\Models\User;
+use App\Services\InventoryLogService;
+use App\Services\SaleService;
+use App\Services\ShoppingCartService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -15,10 +20,9 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
-
-use function PHPSTORM_META\map;
 
 class ManageSale extends Component implements HasForms, HasActions
 {
@@ -26,160 +30,121 @@ class ManageSale extends Component implements HasForms, HasActions
     use InteractsWithForms;
 
     public bool $successSale = false;
+    private SaleService $saleService;
+    private ShoppingCartService $shoppingCartService;
+    private InventoryLogService $inventoryLogService;
 
 
-    //Render this component
+    public function __construct()
+    {
+        $this->saleService = app(SaleService::class);
+        $this->shoppingCartService = app(ShoppingCartService::class);
+        $this->inventoryLogService = app(InventoryLogService::class);
+    }
+
     public function render()
     {
         return view('livewire.sales.manage-sale');
     }
+
+
+    // listeners
+    #[On('pos-reset_sale')]
+    public function changeSuccesSale(bool $successSale = false)
+    {
+        $this->successSale = $successSale;
+    }
+
 
     //Actions 
     public function createAction(): Action
     {
         return Action::make('create')
             ->label(__('Realizar venta'))
-            ->action(function () {
-                $data = [
-                    'user_id' => Auth::id(),
-                    'customer_id' => session('pos-customer_id'),
-                    'sub_total_price' => ShoppingCart::sum('total_price'),
-                    'tax_amount' => ShoppingCart::sum('total_price') * 0.18,
-                    'total_price' => ShoppingCart::sum('total_price') + (ShoppingCart::sum('total_price') * 0.18),
-                    'quantity' => ShoppingCart::sum('quantity'),
-                    'discount' => 0,
-                ];
-                $sale = $this->generateSale($data);
-                if (!$sale) {
-                    return;
-                }
-                $this->generateSaleDetails($sale);
-                // clear shopping cart
-                $this->dispatch('reset-shopping-cart');
-                // send notification
-                Notification::make()
-                    ->title(__('Venta realizada'))
-                    ->success()
-                    ->send();
-                // delete customer to session
-                $this->dispatch('reset-pos-form-customer');
-            })->icon('heroicon-o-banknotes')->color('primary');
+            ->action(fn() => $this->actionCreateSale())->icon('heroicon-o-banknotes')->color('primary');
     }
 
-
-    public function viewInvoiceAction(): Action
-    {
-        return Action::make('viewInvoice')->label(__('Ver ticket'))
-            ->modalContent(function () {
-                if (empty(session('pos-current_sale')) || empty(session('pos-current_sale_details'))) {
-                    return Notification::make()
-                        ->title(__('Parece que la venta o los detalles de la venta se han perdido'))
-                        ->send();
-                }
-                // make to name archive
-                $filename = 'ticket-sale-' . session('pos-current_sale')->id . '.pdf';
-                $path = 'pdfs/tickets/' . $filename;
-
-                // Verificar si el PDF ya existe
-                if (!Storage::exists($path)) {
-                    try {
-                        $items  = array_map(function ($product) {
-                            return (object)[
-                                'product' => (object)[
-                                    'name' => $product['name'],
-                                    'sku' => $product['sku']
-                                ],
-                                'quantity' => $product['quantity'],
-                                'price' => $product['price'],
-                                'subtotal' => $product['total_price']
-                            ];
-                        }, session('pos-current_sale_details')->toArray());
-                        $saleData = (object)[
-                            'id' => session('pos-current_sale')->id,
-                            'created_at' => session('pos-current_sale')->created_at,
-                            'customer' => (object)[
-                                'name' => User::find(session('pos-current_sale')->customer_id)->name,
-                            ],
-                            'items' => $items,
-                            'subtotal' => session('pos-current_sale')->sub_total_price,
-                            'tax' => session('pos-current_sale')->tax_amount,
-                            'total' => session('pos-current_sale')->total_price,
-                            'payment_method' => 'Efectivo',
-                            'status' => __('completado')
-                        ];
-                        $pdf = PDF::loadView('ticket.ticket-layout', [
-                            'sale' => $saleData
-                        ])->setPaper('a4');
-                    } catch (\Throwable $e) {
-                        // Esto te mostrará el error específico en el log
-                        dd($e);
-                        return "Error: " . $e->getMessage();
-                    }
-
-                    Storage::put($path, $pdf->output());
-                }
-
-                // Convertir el PDF a base64 para mostrarlo en el iframe
-
-                $base64 = base64_encode(Storage::get($path));
-
-                // Retornar vista con el PDF embebido
-
-                return view('filament.components.pdf-viewer', [
-                    'pdfData' => $base64
-                ]);
-            })->icon('heroicon-o-eye')->registerModalActions([
-                Action::make('report')
-                    ->requiresConfirmation()
-            ])
-            ->modalSubmitAction(false)
-            ->color('success')
-        ;
-    }
-
-    //End Actions
-    private function generateSale($data): ?Sale
+    private function actionCreateSale()
     {
         try {
-            // get method_payment_id from session
-            $method_payment = session('pos-method_payment_id');
-            $data['method_payment_id'] = $method_payment;
-            //get customer_id from session
-            $customer_id = $data['customer_id'];
-            // get all productsShoppingCart in shopping cart
-            $productsShoppingCart = ShoppingCart::all();
+            // validate if exist products in shopping cart
+            if ($this->shoppingCartService->isEmpty()) {
+                throw new \Exception(__("No se encontraron productos en el carrito"));
+            }
+            // generate sale
+            $sale = $this->generateSale();
+            session(['pos-sale' => $sale]);
+            // generate sale details
+            $saleDetails = $this->generateSaleDetails($sale);
+            // store log
+            $logs = $saleDetails->map(function ($product) {
+                $concept = 'venta';
+                $concept_id = Concept::where('name', $concept)->first()->id;
+                return [
+                    'action' => 'out',
+                    'quantity' => $product->quantity,
+                    'user_id' => Auth::id(),
+                    'product_id' => $product->id,
+                    'concept_id' => $concept_id,
+                    'description' => 'Venta realizada por POS',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            });
+            $this->inventoryLogService->storeInventoryLogs($logs->toArray());
 
-            // validate customer_id and productsShoppingCart
-            if (empty($customer_id)) {
-                throw new \Exception(__('No se ha seleccionado un cliente'));
-            }
-            if ($productsShoppingCart->isEmpty()) {
-                throw new \Exception(__('No hay productos en el carrito'));
-            }
-            //create sale
-            $sale = Sale::create($data);
-            session(['pos-current_sale' => $sale]);
+            // delete all products of shopping cart
+            $this->dispatch('pos-reset_shopping_cart');
+            // reset customer
+            $this->dispatch('pos-reset_form_customer');
+            // send notification
+            Notification::make()
+                ->title(__('Venta realizada'))
+                ->success()
+                ->send();
+            // clear form and delete customer_id of session
+        } catch (\Throwable $th) {
+            return Notification::make()
+                ->title(__('Error al generar la venta'))
+                ->body($th->getMessage())
+                ->send();
+        }
+    }
+
+
+    private function generateSale(): Sale
+    {
+        try {
+            // data to create sale
+            $data = [
+                'user_id' => Auth::id(),
+                'customer_id' => session('pos-customer_id'),
+                'voucher_type_id' => session('pos-voucher_type_id'),
+                'method_payment_id' => session('pos-method_payment_id'),
+                'sub_total_price' => ShoppingCart::sum('total_price'),
+                'tax_amount' => ShoppingCart::sum('total_price') * 0.18,
+                'total_price' => ShoppingCart::sum('total_price') * 1.18,
+                'quantity' => ShoppingCart::sum('quantity'),
+                'discount' => 0,
+            ];
+            // store sale
+            $sale = $this->saleService->storeSale($data);
+
             return $sale;
         } catch (\Throwable $th) {
-            Notification::make()
-                ->title(__($th->getMessage()))
-                ->send();
-            return null;
+            throw new \Exception($th->getMessage());
         }
     }
 
     private function generateSaleDetails(Sale $sale)
     {
         try {
-            // get all sale details
-            $shoppingCart = ShoppingCart::all();
-            session(['pos-current_sale_details' => $shoppingCart]);
+            // get all products of shoppingcart
+            $shoppingCart = $this->shoppingCartService->getAllProducts();
+            session(['pos-sale_details' => $shoppingCart]);
+
             // reduce stock
-            $shoppingCart->each(function ($productShoppingCart) {
-                $product = Product::find($productShoppingCart->id);
-                $product->stock = $product->stock - $productShoppingCart->quantity;
-                $product->save();
-            });
+            $this->shoppingCartService->reduceStock($shoppingCart);
 
             // attach productsShoppingCart to sale
             $productsToSync = $shoppingCart->map(function ($product) {
@@ -188,21 +153,92 @@ class ManageSale extends Component implements HasForms, HasActions
                     'quantity' => $product->quantity,
                 ];
             })->toArray();
+
             $sale->products()->sync($productsToSync);
+
             $this->dispatch('refresh-table-list-products-pos');
 
+            // notify alert stock to users
             $this->notifyAlertStock($sale);
-
+            //storage voucher
+            $this->storageVoucher();
             // successSale true for show ticket button
             $this->successSale = true;
+            return $shoppingCart;
         } catch (\Throwable $th) {
-            Notification::make()
-                ->title(__($th->getMessage()))
-                ->send();
-            return null;
+            throw new \Exception($th->getMessage());
         }
     }
 
+    public function viewInvoiceAction(): Action
+    {
+        return Action::make('viewInvoice')->label(__('Ver ticket'))
+            ->modalContent($this->storageVoucher())->icon('heroicon-o-eye')->registerModalActions([
+                Action::make('report')
+                    ->requiresConfirmation()
+            ])
+            ->modalSubmitAction(false)
+            ->color('success')
+        ;
+    }
+
+    public function storageVoucher()
+    {
+        if (empty(session('pos-sale')) || empty(session('pos-sale_details'))) {
+            return Notification::make()
+                ->title(__('Parece que la venta o los detalles de la venta se han perdido'))
+                ->send();
+        }
+        // make to name archive
+        $filename = 'ticket-sale-' . session('pos-sale')->id . '.pdf';
+        $path = 'pdfs/tickets/' . $filename;
+
+        // Verificar si el PDF ya existe
+        if (!Storage::exists($path)) {
+            try {
+                $items  = array_map(function ($product) {
+                    return (object)[
+                        'product' => (object)[
+                            'name' => $product['name'],
+                            'sku' => $product['sku']
+                        ],
+                        'quantity' => $product['quantity'],
+                        'price' => $product['price'],
+                        'subtotal' => $product['total_price']
+                    ];
+                }, session('pos-sale_details')->toArray());
+                $saleData = (object)[
+                    'id' => session('pos-sale')->id,
+                    'created_at' => session('pos-sale')->created_at,
+                    'customer' => (object)[
+                        'name' => User::find(session('pos-sale')->customer_id)->name,
+                    ],
+                    'items' => $items,
+                    'subtotal' => session('pos-sale')->sub_total_price,
+                    'tax' => session('pos-sale')->tax_amount,
+                    'total' => session('pos-sale')->total_price,
+                    'payment_method' => 'Efectivo',
+                    'status' => __('completado')
+                ];
+                $pdf = PDF::loadView('ticket.ticket-layout', [
+                    'sale' => $saleData
+                ])->setPaper('a4');
+            } catch (\Throwable $e) {
+                // Esto te mostrará el error específico en el log
+                dd($e);
+                return "Error: " . $e->getMessage();
+            }
+
+            Storage::put($path, $pdf->output());
+        }
+
+        // Convertir el PDF a base64 para mostrarlo en el iframe
+        $base64 = base64_encode(Storage::get($path));
+        // Retornar vista con el PDF embebido
+        return view('filament.components.pdf-viewer', [
+            'pdfData' => $base64
+        ]);
+    }
 
     public function notifyAlertStock(Sale $sale)
     {
@@ -216,7 +252,6 @@ class ManageSale extends Component implements HasForms, HasActions
                 // Verifica si el modelo relacionado existe y tiene la propiedad `name`
                 if (!empty($alertStock->name)) {
                     if ($alertStock->name === 'inactivo' || $alertStock->name === 'inactive') {
-
                         return;
                     }
                     if ($product->stock < $product->minimum_stock) {
@@ -236,12 +271,5 @@ class ManageSale extends Component implements HasForms, HasActions
         } catch (\Throwable $th) {
             dd($th);
         }
-    }
-
-
-    #[On('pos-reset_sale')]
-    public function resetSale()
-    {
-        $this->successSale = false;
     }
 }

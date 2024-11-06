@@ -109,7 +109,7 @@ class ListProductsShoppingCart extends Component implements HasForms, HasTable
     }
 
 
-    #[On('reset-shopping-cart')]
+    #[On('pos-reset_shopping_cart')]
     public function resetShoppingCart()
     {
         ShoppingCart::truncate();
@@ -119,7 +119,7 @@ class ListProductsShoppingCart extends Component implements HasForms, HasTable
     {
         if ($product['stock'] < $quantity) {
             Notification::make()
-                ->title('La cantidad solicitada excede el stock disponible')
+                ->title('La cantidad solicitada excede el stock disponible, stock disponible: ' . $product['stock'])
                 ->send();
             return false;
         }

@@ -1,2 +1,4 @@
 TODO: add seeder for table status_types
 TODO: automatic generate voucher after sale without clicking in the show voucher 
+TODO: notify super admins only once of stock minimun product
+TODO: clear last sale 

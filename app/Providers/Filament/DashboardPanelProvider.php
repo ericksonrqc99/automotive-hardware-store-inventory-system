@@ -22,7 +22,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use SolutionForest\FilamentSimpleLightBox\SimpleLightBoxPlugin;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -58,6 +58,7 @@ class DashboardPanelProvider extends PanelProvider
                 BrandResource\Widgets\BrandSalesOverview::class,
                 ProductResource\Widgets\ProductsStockOverview::class,
             ])->profile()
+            ->viteTheme('resources/css/filament/dashboard/theme.css')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -75,6 +76,20 @@ class DashboardPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
-            ])->plugin(SimpleLightBoxPlugin::make());
+            ])->plugin(
+                FilamentFullCalendarPlugin::make()
+                    ->schedulerLicenseKey('')
+                    ->selectable(true)
+                    ->editable()
+                    ->timezone(config('app.timezone'))
+                    ->locale(config('app.locale'))
+                    ->plugins([
+                        'dayGrid',
+                        'timeGrid',
+                        'list',
+                    ])
+                    ->config([])
+
+            );;
     }
 }

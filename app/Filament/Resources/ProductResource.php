@@ -172,6 +172,7 @@ class ProductResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('alertStock.name')
+                    ->label('Alerta de stock')
                     ->color(fn(string $state): string => match ($state) {
                         'activo' => 'success',
                         'inactivo' => 'danger',
