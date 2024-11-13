@@ -12,6 +12,9 @@ class ProductsStockOverview extends ChartWidget
 
     protected static ?string $heading = 'Inventario por Nivel de Stock';
 
+    protected static ?string $maxHeight = '200px';
+
+
     protected function getData(): array
     {
         // Definir los niveles de stock

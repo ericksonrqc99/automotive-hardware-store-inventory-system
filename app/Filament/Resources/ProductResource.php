@@ -2,19 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\ProductExporter;
+use App\Filament\Imports\ProductImporter;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\CharacteristicsRelationManager;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\MeasurementUnit;
-use App\Models\MethodPayment;
 use App\Models\ModelCar;
 use App\Models\Product;
 use App\Models\Supplier;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Actions\ImportAction;
 use Filament\Tables\Table;
 
 class ProductResource extends Resource
@@ -131,6 +135,7 @@ class ProductResource extends Resource
                     ->searchable()
                     ->required(),
                 Forms\Components\FileUpload::make('image_url')
+                    ->label(__('Imagen'))
                     ->image()->imageEditor()->imageEditorMode(2),
             ]);
     }
@@ -139,6 +144,9 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
@@ -220,6 +228,19 @@ class ProductResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->headerActions(
+                [
+                    ExportAction::make()->exporter(ProductExporter::class)->formats([
+                        ExportFormat::Csv,
+                        ExportFormat::Xlsx
+                    ])->icon('heroicon-o-document-arrow-down')
+                        ->fileName(fn(): string => self::getFileNameExport()),
+                    ImportAction::make()
+                        ->importer(ProductImporter::class)
+                        ->csvDelimiter(';')
+                        ->icon('heroicon-o-document-arrow-up')
+                ],
+            )
             ->filters([
                 //
             ])
@@ -231,9 +252,20 @@ class ProductResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ExportBulkAction::make()
+                        ->exporter(ProductExporter::class)->formats([
+                            ExportFormat::Xlsx,
+                        ])->label('Exportar')->icon('heroicon-o-document-arrow-down')->fileName(fn(): string => self::getFileNameExport()),
                 ]),
-            ]);
+            ])->paginated([5, 10, 20, 50, 100]);
     }
+
+    public static function getFileNameExport(): string
+    {
+        return "products-" . now('America/Lima') . ".csv";
+    }
+
+
 
     public static function getRelations(): array
     {

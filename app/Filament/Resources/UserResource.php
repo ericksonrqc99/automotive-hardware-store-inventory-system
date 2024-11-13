@@ -37,27 +37,33 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('status_id')
-                    ->relationship('status', 'name')
-                    ->default(1),
                 Forms\Components\TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
+                    ->label('Correo electrónico')
                     ->email()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password')
+                    ->label('Contraseña')
                     ->password()
                     ->maxLength(255)
                     ->minLength(8),
                 Forms\Components\TextInput::make('ndocument')
+                    ->label('Número de documento')
                     ->numeric(),
                 Forms\Components\Select::make('roles')
+                    ->label('Roles')
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload()
-                    ->searchable()
+                    ->searchable(),
+                Forms\Components\Select::make('status_id')
+                    ->label('Estado')
+                    ->relationship('status', 'name')
+                    ->default(1),
             ]);
     }
 
@@ -69,8 +75,10 @@ class UserResource extends Resource
                     ->label('Nombre')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->label('Correo electrónico')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Roles')
                     ->badge(),
                 Tables\Columns\TextColumn::make('ndocument')
                     ->label('Número de documento')

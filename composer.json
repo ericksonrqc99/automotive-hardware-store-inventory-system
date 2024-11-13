@@ -9,7 +9,7 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "bezhansalleh/filament-shield": "^3.2",
         "calebporzio/sushi": "^2.5",
-        "filament/filament": "^3.2",
+        "filament/filament": "3.2.123",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "saade/filament-fullcalendar": "^3.2",

@@ -10,9 +10,17 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 class SaleTimesOverview extends ChartWidget
 {
     use HasWidgetShield;
+
     protected static ?string $heading = 'Ventas a lo Largo del Tiempo';
 
     public ?string $filter = 'monthly'; // Valor por defecto
+
+    protected int | string | array $columnSpan = 'full';
+
+    protected static ?string $maxHeight = '200px';
+
+
+    // protected int | string | array $rowSpan = 'full';
 
     protected function getFilters(): ?array
     {

@@ -15,6 +15,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -51,8 +52,8 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                SupplierResource\Widgets\SupplierOverview::class,
                 SaleResource\Widgets\SaleTimesOverview::class,
+                SupplierResource\Widgets\SupplierOverview::class,
                 UserResource\Widgets\UsersSalesChart::class,
                 CategoryResource\Widgets\CategorySalesOverview::class,
                 BrandResource\Widgets\BrandSalesOverview::class,
@@ -90,6 +91,9 @@ class DashboardPanelProvider extends PanelProvider
                     ])
                     ->config([])
 
-            );;
+            )
+            ->spa()
+            ->maxContentWidth(MaxWidth::Full)
+            ->unsavedChangesAlerts();
     }
 }

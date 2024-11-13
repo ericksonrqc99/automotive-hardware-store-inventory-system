@@ -2,19 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\SaleExporter;
+
 use App\Filament\Resources\SaleResource\Pages;
-use App\Filament\Resources\SaleResource\RelationManagers;
 use App\Filament\Resources\SaleResource\RelationManagers\ProductsRelationManager;
 use App\Models\Sale;
 use App\Models\User;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View;
 
 class SaleResource extends Resource
 {
@@ -78,16 +80,17 @@ class SaleResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label(__('Usuario'))
                     ->numeric()
-                    ->searchable(),
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('customer.name')
                     ->label(__('Cliente'))
                     ->numeric()
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('quantity')
                     ->label(__('Cantidad'))
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('sub_total_price')
                     ->label(__('Subtotal'))
                     ->money($currency = 'S/.')
@@ -105,11 +108,10 @@ class SaleResource extends Resource
                     ->money($currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label(__('Creación'))
+                    ->label(__('Fecha venta'))
                     ->since()
                     ->dateTimeTooltip($format = 'd-m-Y H:i:s', $timezone = 'America/Lima')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->label(__('Actualización'))
                     ->dateTime()
@@ -119,6 +121,15 @@ class SaleResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions(
+                [
+                    ExportAction::make()->exporter(SaleExporter::class)->formats([
+                        ExportFormat::Csv,
+                        ExportFormat::Xlsx
+                    ])->icon('heroicon-o-document-arrow-down')
+                        ->fileName(fn(): string => self::getFileNameExport()),
+                ]
+            )
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
@@ -141,9 +152,14 @@ class SaleResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])->paginated([5, 10, 25, 50, 100])
+            ->defaultSort('created_at', 'desc');
     }
 
+    public static function getFileNameExport(): string
+    {
+        return "sales-" . now('America/Lima');
+    }
 
     public static function getRelations(): array
     {

@@ -12,6 +12,8 @@ class CategorySalesOverview extends ChartWidget
 
     protected static ?string $heading = 'Top 5 Categorías Más Vendidas';
 
+    protected static ?string $maxHeight = '200px';
+
 
     protected function getData(): array
     {

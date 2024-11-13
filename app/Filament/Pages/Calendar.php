@@ -14,6 +14,8 @@ class Calendar extends Page
 
     protected static string $view = 'filament.pages.calendar';
 
+    protected static ?string $navigationGroup = 'Eventos';
+
     public function getTitle(): string | Htmlable
     {
         return __('Calendario');

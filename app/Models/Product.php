@@ -25,6 +25,10 @@ class Product extends Model
     {
         return $this->belongsTo(MeasurementUnit::class, 'measurement_unit_id');
     }
+    public function measurement_unit()
+    {
+        return $this->belongsTo(MeasurementUnit::class, 'measurement_unit_id');
+    }
 
     public function characteristics()
     {
@@ -53,6 +57,11 @@ class Product extends Model
     }
 
     public function alertStock()
+    {
+        return $this->belongsTo(StatusType::class, 'alert_stock_id');
+    }
+
+    public function alert_stock()
     {
         return $this->belongsTo(StatusType::class, 'alert_stock_id');
     }

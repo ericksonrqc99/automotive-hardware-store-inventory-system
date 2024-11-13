@@ -92,7 +92,12 @@ class ManageSale extends Component implements HasForms, HasActions
                 ];
             });
             $this->inventoryLogService->storeInventoryLogs($logs->toArray());
-
+            // notify alert stock to users
+            $this->notifyAlertStock($sale);
+            //storage voucher
+            $this->storageVoucher();
+            // successSale true for show ticket button
+            $this->successSale = true;
             // delete all products of shopping cart
             $this->dispatch('pos-reset_shopping_cart');
             // reset customer
@@ -143,27 +148,14 @@ class ManageSale extends Component implements HasForms, HasActions
             $shoppingCart = $this->shoppingCartService->getAllProducts();
             session(['pos-sale_details' => $shoppingCart]);
 
+            // store sale details
+            $this->saleService->storeSaleDetails($shoppingCart, $sale);
+
             // reduce stock
             $this->shoppingCartService->reduceStock($shoppingCart);
 
-            // attach productsShoppingCart to sale
-            $productsToSync = $shoppingCart->map(function ($product) {
-                return [
-                    'product_id' => $product->id,
-                    'quantity' => $product->quantity,
-                ];
-            })->toArray();
-
-            $sale->products()->sync($productsToSync);
-
+            // refresh table list products pos
             $this->dispatch('refresh-table-list-products-pos');
-
-            // notify alert stock to users
-            $this->notifyAlertStock($sale);
-            //storage voucher
-            $this->storageVoucher();
-            // successSale true for show ticket button
-            $this->successSale = true;
             return $shoppingCart;
         } catch (\Throwable $th) {
             throw new \Exception($th->getMessage());

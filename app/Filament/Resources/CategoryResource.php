@@ -46,9 +46,10 @@ class CategoryResource extends Resource
                     ->relationship('status', 'name')
                     ->default(1)
                     ->required(),
-                Forms\Components\TextInput::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->label(__('Descripción'))
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -72,7 +73,8 @@ class CategoryResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('description')
                     ->label(__('Descripción'))
-                    ->searchable(),
+                    ->searchable()
+                    ->html(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('Creado'))
                     ->dateTime()

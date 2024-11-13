@@ -36,15 +36,21 @@ class BrandResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->label(__('Nombre'))
+                Forms\Components\TextInput::make('name')
+                    ->label(__('Nombre'))
                     ->required()
                     ->maxLength(100),
-                Forms\Components\Select::make('status_id')->label(__('Departamento'))
+                Forms\Components\Select::make('status_id')
+                    ->label(__('Departamento'))
                     ->relationship('status', 'name')
                     ->default(1)
                     ->required(),
-                Forms\Components\Textarea::make('description')->label(__('Descripción'))
-                    ->maxLength(255)->placeholder(__('Ingrese una descripción')),
+                Forms\Components\RichEditor::make('description')
+
+                    ->label(__('Descripción'))
+                    ->maxLength(255)
+                    ->placeholder(__('Ingrese una descripción'))
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -66,7 +72,7 @@ class BrandResource extends Resource
                         default => 'heroicon-o-question-mark-circle',
                     }),
                 Tables\Columns\TextColumn::make('description')->label(__('Descripción'))
-                    ->searchable(),
+                    ->searchable()->html(),
                 Tables\Columns\TextColumn::make('created_at')->label(__('Creado'))
                     ->dateTime()
                     ->sortable()

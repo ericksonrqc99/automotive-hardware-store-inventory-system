@@ -13,6 +13,9 @@ class BrandSalesOverview extends ChartWidget
 
     protected static ?string $heading = 'Top 5 Marcas con más ventas';
 
+    protected static ?string $maxHeight = '200px';
+
+
     protected function getData(): array
     {
         // Obtener las marcas de productos y la suma de ventas por cada una

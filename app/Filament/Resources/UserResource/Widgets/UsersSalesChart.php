@@ -12,6 +12,9 @@ class UsersSalesChart extends ChartWidget
 
     protected static ?string $heading = 'Top 5 mejores clientes';
 
+    protected static ?string $maxHeight = '200px';
+
+
     protected function getData(): array
     {
         // Obtener los 5 clientes que más compran desde la tabla 'users'

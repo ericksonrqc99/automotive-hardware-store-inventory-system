@@ -13,6 +13,8 @@ class SupplierOverview extends ChartWidget
 
     protected static ?string $heading = 'Top 5 Productos Más Vendidos';
 
+    protected static ?string $maxHeight = '200px';
+
 
     public $limit = 5; // Mostramos 5 por defecto
 
