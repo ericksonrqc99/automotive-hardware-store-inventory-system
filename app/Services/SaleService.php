@@ -43,4 +43,14 @@ class SaleService
             throw new \Exception($th->getMessage());
         }
     }
+
+
+    public function getCountSales(): int
+    {
+        try {
+            return Sale::count();
+        } catch (\Throwable $th) {
+            throw new \Exception($th->getMessage());
+        }
+    }
 }

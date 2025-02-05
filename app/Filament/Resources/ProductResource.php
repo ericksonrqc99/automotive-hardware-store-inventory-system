@@ -144,9 +144,6 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->label('ID')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
@@ -163,11 +160,11 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Precio de venta')
-                    ->money($curency = 'S/.')
+                    ->money($currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cost')
                     ->label('Costo de compra')
-                    ->money($curency = 'S/.')
+                    ->money($$currency = 'S/.')
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('image_url')->label('Imagen'),
                 Tables\Columns\TextColumn::make('minimum_stock')
@@ -179,18 +176,6 @@ class ProductResource extends Resource
                     ->label('Stock Actual')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('alertStock.name')
-                    ->label('Alerta de stock')
-                    ->color(fn(string $state): string => match ($state) {
-                        'activo' => 'success',
-                        'inactivo' => 'danger',
-                        default => 'gray',
-                    })
-                    ->icon(fn(string $state): string => match ($state) {
-                        'activo' => 'heroicon-o-check-circle',
-                        'inactivo' => 'heroicon-o-x-circle',
-                        default => 'heroicon-o-question-mark-circle',
-                    }),
                 Tables\Columns\TextColumn::make('status.name')
                     ->color(fn(string $state): string => match ($state) {
                         'activo' => 'success',
@@ -247,6 +232,7 @@ class ProductResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\DeleteAction::make(),
 
             ])
             ->bulkActions([

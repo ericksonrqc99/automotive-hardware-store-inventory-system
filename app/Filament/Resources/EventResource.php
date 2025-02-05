@@ -19,6 +19,7 @@ class EventResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
 
+
     public static function getNavigationGroup(): ?string
     {
         return __('Eventos');
@@ -40,15 +41,21 @@ class EventResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
-                    ->label(__('Name'))
+                    ->label(__('Nombre'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('venue')
-                    ->label(__('Venue')),
+                    ->label(__('Evento')),
                 DateTimePicker::make('starts_at')
-                    ->format('Y-m-d H:i:s'),
-                DateTimePicker::make('ends_at')
+                    ->required()
+                    ->label(__('Inicio'))
                     ->format('Y-m-d H:i:s')
+                    ->native(false),
+                DateTimePicker::make('ends_at')
+                    ->required()
+                    ->label(__('Fin'))
+                    ->format('Y-m-d H:i:s')
+                    ->native(false),
             ]);
     }
 
@@ -73,6 +80,7 @@ class EventResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

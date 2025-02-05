@@ -56,23 +56,23 @@
             <tr>
                 <td>{{ $item->product->name }}</td>
                 <td>{{ $item->quantity }}</td>
-                <td>{{ Number::currency($item->price,'S/.')}}</td>
-                <td>{{ Number::currency($item->subtotal,'S/.') }}</td>
+                <td>{{ Number::currency(round($item->price,2,PHP_ROUND_HALF_UP),'S/.')}}</td>
+                <td>{{ Number::currency(round($item->subtotal,2,PHP_ROUND_HALF_UP),'S/.') }}</td>
             </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>SubTotal:</strong></td>
-                <td>{{ Number::currency($sale->subtotal,'S/.') }}</td>
+                <td>{{ Number::currency(round($sale->subtotal,2,PHP_ROUND_HALF_UP),'S/.') }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>IGV:</strong></td>
-                <td>{{ Number::currency($sale->tax,'S/.') }}</td>
+                <td>{{ Number::currency(round($sale->tax,2,PHP_ROUND_HALF_UP),'S/.') }}</td>
             </tr>
             <tr>
                 <td colspan="3" style="text-align: right"><strong>Total:</strong></td>
-                <td>{{ Number::currency($sale->total,'S/.') }}</td>
+                <td>{{ Number::currency(round($sale->total,2,PHP_ROUND_HALF_UP),'S/.') }}</td>
             </tr>
         </tfoot>
     </table>

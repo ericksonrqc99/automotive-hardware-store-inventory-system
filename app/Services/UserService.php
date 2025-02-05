@@ -25,4 +25,14 @@ class UserService
             throw new \Exception($th->getMessage());
         }
     }
+
+
+    public function getCountUsers(): int
+    {
+        try {
+            return User::count();
+        } catch (\Throwable $th) {
+            throw new \Exception($th->getMessage());
+        }
+    }
 }

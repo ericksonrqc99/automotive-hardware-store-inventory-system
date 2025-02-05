@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ModelCarResource\Pages;
-use App\Filament\Resources\ModelCarResource\RelationManagers;
 use App\Models\Brand;
 use App\Models\ModelCar;
 use Filament\Forms;
@@ -98,6 +97,7 @@ class ModelCarResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

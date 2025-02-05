@@ -8,6 +8,7 @@ use App\Filament\Resources\CategoryResource;
 use App\Filament\Resources\BrandResource;
 use App\Filament\Resources\ProductResource;
 use App\Filament\Resources\SaleResource;
+use App\Filament\Widgets\StatsOverview;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -52,6 +53,7 @@ class DashboardPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                StatsOverview::class,
                 SaleResource\Widgets\SaleTimesOverview::class,
                 SupplierResource\Widgets\SupplierOverview::class,
                 UserResource\Widgets\UsersSalesChart::class,

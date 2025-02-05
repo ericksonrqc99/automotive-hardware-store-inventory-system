@@ -22,6 +22,7 @@ class ListProducts extends Component implements HasForms, HasTable
     use InteractsWithForms;
     use InteractsWithTable;
 
+
     public function table(Table $table): Table
     {
         return $table
@@ -33,7 +34,7 @@ class ListProducts extends Component implements HasForms, HasTable
                     ->searchable(),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Precio')
-                    ->money($currency = 'S/.'),
+                    ->money($currency  = 'S/.'),
                 Tables\Columns\TextColumn::make('stock')
                     ->label('Stock')
                     ->numeric()

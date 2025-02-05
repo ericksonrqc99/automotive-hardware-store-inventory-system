@@ -108,15 +108,16 @@ class InventoryLogResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
-            ->defaultSort('created_at', 'desc');;
+            ->bulkActions([])
+            ->defaultSort('created_at', 'desc')->paginated([5, 10, 25, 50, 100]);
     }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
 
     public static function getRelations(): array
     {
